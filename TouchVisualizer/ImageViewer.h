@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "../SDLpp/Window.h"
-#include "../SDLpp/Renderer.h"
-#include "../SDLpp/Texture.h"
+#include <SDLpp/Window.h>
+#include <SDLpp/Renderer.h>
+#include <SDLpp/Texture.h>
 #include "Cross.h"
 //#include "../SDLpp/GLContext.h"
 

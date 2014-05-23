@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Cross.h"
-#include "../SDLpp/Renderer.h"
+#include <SDLpp/Renderer.h>
 
 void Cross::draw(sdl::Renderer& renderer)
 {

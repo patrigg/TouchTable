@@ -1,5 +1,5 @@
 #pragma once
-#include "../SDLpp/Texture.h"
+#include <SDLpp/Texture.h>
 
 template<typename T>
 class Image;

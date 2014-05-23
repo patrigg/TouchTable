@@ -14,10 +14,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TouchDetectorTest", "TouchD
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TouchDebugOutput", "TouchDebugOutput\TouchDebugOutput.vcxproj", "{95A5802C-46ED-4384-BDB4-683BAB8372E1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pbl", "..\..\..\..\..\..\Libraries\pbl\pbl.vcxproj", "{32868F2C-0591-4A18-BA03-C418E9A1389F}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLpp", "..\..\..\..\..\..\Libraries\SDLpp\SDLpp.vcxproj", "{BC39F2E8-6839-4CFF-9A52-9B23C344601D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -76,30 +72,6 @@ Global
 		{95A5802C-46ED-4384-BDB4-683BAB8372E1}.Release|Win32.Build.0 = Release|Win32
 		{95A5802C-46ED-4384-BDB4-683BAB8372E1}.Release|x64.ActiveCfg = Release|x64
 		{95A5802C-46ED-4384-BDB4-683BAB8372E1}.Release|x64.Build.0 = Release|x64
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|Win32.Build.0 = Debug|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|x64.ActiveCfg = Debug|x64
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Debug|x64.Build.0 = Debug|x64
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|Win32.ActiveCfg = Release|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|Win32.Build.0 = Release|Win32
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|x64.ActiveCfg = Release|x64
-		{32868F2C-0591-4A18-BA03-C418E9A1389F}.Release|x64.Build.0 = Release|x64
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|Win32.Build.0 = Debug|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|x64.ActiveCfg = Debug|x64
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Debug|x64.Build.0 = Debug|x64
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|Win32.ActiveCfg = Release|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|Win32.Build.0 = Release|Win32
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|x64.ActiveCfg = Release|x64
-		{BC39F2E8-6839-4CFF-9A52-9B23C344601D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

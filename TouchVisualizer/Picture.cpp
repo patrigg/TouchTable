@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Picture.h"
 #include "gl_core_4_3.hpp"
-#include "../SDLpp/Renderer.h"
+#include <SDLpp/Renderer.h>
 #include "../TouchDetector/Image.h"
 
 

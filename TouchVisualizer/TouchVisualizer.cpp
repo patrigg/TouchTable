@@ -7,8 +7,8 @@
 #include "../TouchDetector/CenterPointExtractor.h"
 #include "ImageViewer.h"
 #include <OpenNI.h>
-#include "../SDLpp/Application.h"
-#include "../SDLpp/GLContext.h"
+#include <SDLpp/Application.h>
+#include <SDLpp/GLContext.h>
 #include "gl_core_4_3.hpp"
 
 using namespace openni;
