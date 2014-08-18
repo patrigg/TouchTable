@@ -5,11 +5,11 @@
 #include "../TouchDetector/DepthDetector.h"
 #include "../TouchDetector/ScanLineSegmenter.h"
 #include "../TouchDetector/CenterPointExtractor.h"
+#include "../TouchDetector/PointTracker.h"
 #include "ImageViewer.h"
 #include <OpenNI.h>
 #include <SDLpp/Application.h>
 #include <SDLpp/GLContext.h>
-#include "gl_core_4_3.hpp"
 
 using namespace openni;
 
@@ -96,6 +96,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	viewer.add(320, 240, 320, 240);
 	
 	CenterPointExtractor centerPointExtractor(MinBlobSize);
+	PointTracker tracker;
 
 	while (true)
 	{
@@ -111,11 +112,17 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		std::vector<std::pair<short, short>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
+
+		tracker.track(centerPoints);
 		
 		viewer.crosses.clear();
-		 
 		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<short, short>& coord) {
 			return Cross{ coord.first, coord.second };
+		});
+
+		viewer.lines.clear();
+		std::transform(begin(tracker.motions()), end(tracker.motions()), std::back_inserter(viewer.lines), [](const Motion& motion) {
+			return Lines{ motion.points };
 		});
 		
 		viewer[0].update(detector.mask());

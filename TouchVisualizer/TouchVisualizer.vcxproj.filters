@@ -36,6 +36,9 @@
     <ClInclude Include="Cross.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -54,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cross.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

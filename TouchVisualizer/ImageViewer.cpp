@@ -18,6 +18,10 @@ void ImageViewer::update()
 	{
 		picture.draw(renderer);
 	}
+	for (auto& line : lines)
+	{
+		line.draw(renderer);
+	}
 	for (auto& cross : crosses)
 	{
 		cross.draw(renderer);

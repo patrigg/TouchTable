@@ -4,6 +4,7 @@
 #include <SDLpp/Renderer.h>
 #include <SDLpp/Texture.h>
 #include "Cross.h"
+#include "Lines.h"
 //#include "../SDLpp/GLContext.h"
 
 #include "Picture.h"
@@ -18,6 +19,7 @@ class ImageViewer
 
 public:
 	std::vector<Cross> crosses;
+	std::vector<Lines> lines;
 
 	ImageViewer();
 

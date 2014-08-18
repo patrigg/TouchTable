@@ -141,6 +141,7 @@
     <ClInclude Include="CenterPointExtractor.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="LineSegment.h" />
+    <ClInclude Include="PointTracker.h" />
     <ClInclude Include="ScanLineSegmenter.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="DepthDetector.h" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="CenterPointExtractor.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="PointTracker.cpp" />
     <ClCompile Include="ScanLineSegmenter.cpp" />
     <ClCompile Include="DepthDetector.cpp" />
   </ItemGroup>
