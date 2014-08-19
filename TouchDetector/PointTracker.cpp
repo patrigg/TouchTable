@@ -15,14 +15,17 @@ PointTracker::~PointTracker()
 
 void PointTracker::track(std::vector<std::pair<short, short>> points)
 {
-	for (auto& m : m_motions)
+	std::vector<TrackedPoint> currentPoints;
+	currentPoints.reserve(points.size());
+
+	for (const auto& p : m_points)
 	{
 		if (points.empty())
 			break;
 
 		std::vector<int> distances;
 		
-		auto& base = m.points.back();
+		auto& base = p.position;
 		std::transform(begin(points), end(points), std::back_inserter(distances), [&base](const std::pair<short, short>& p)
 		{
 			auto diffx = p.first - base.first;
@@ -33,45 +36,69 @@ void PointTracker::track(std::vector<std::pair<short, short>> points)
 
 		auto min = std::min_element(begin(distances), end(distances));
 
-		if (*min < 100)
+		if (min != end(distances) && *min < 100)
 		{
 			auto minPoint = begin(points) + (min - begin(distances));
 
-			m.currentTimestamp = m_timestamp;
-			m.points.push_back(*minPoint);
+			TrackedPoint point = {
+				m_timestamp,
+				p.id,
+				*minPoint
+			};
+			
+			currentPoints.push_back(point);
 
 			points.erase(minPoint);
 		}
 		else
 		{
-			onRelease(m);
+			if (onRelease)
+			{
+				onRelease(p);
+			}
+			
 		}
 	}
 
-	m_motions.resize(std::remove_if(begin(m_motions), end(m_motions), [this](const Motion& m){
-		return this->m_timestamp != m.currentTimestamp;
-	}) - begin(m_motions));
-	
-	std::transform(begin(points), end(points), std::back_inserter(m_motions), [this](const std::pair<short, short>& p){
-		Motion m { m_id++, m_timestamp, { p } };
-		onTouch(m);
-		return m;
+	if (onMove)
+	{
+		for (const auto& p : currentPoints)
+		{
+			onMove(p);
+		}
+	}
+
+	m_points = std::move(currentPoints);
+	std::transform(begin(points), end(points), std::back_inserter(m_points), [this](const std::pair<short, short>& p){
+		TrackedPoint t { m_id++, m_timestamp, { p } };
+		if (onTouch)
+		{
+			onTouch(t);
+		}
+		
+		return t;
 	});
 
 	++m_timestamp;
 }
 
-const std::vector<Motion>& PointTracker::motions() const
+const std::vector<TrackedPoint>& PointTracker::points() const
 {
-	return m_motions;
+	return m_points;
 }
-
-void PointTracker::onTouch(const Motion& motion)
-{
-
-}
-
-void PointTracker::onRelease(const Motion& motion)
+/*
+void PointTracker::onTouch(const TrackedPoint& point)
 {
 
 }
+
+void PointTracker::onMove(const TrackedPoint& point)
+{
+
+}
+
+void PointTracker::onRelease(const TrackedPoint& point)
+{
+
+}
+*/

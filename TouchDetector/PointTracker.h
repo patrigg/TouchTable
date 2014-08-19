@@ -1,16 +1,17 @@
 #pragma once
 #include <vector>
+#include <functional>
 
-struct Motion
+struct TrackedPoint
 {
 	int currentTimestamp;
 	int id;
-	std::vector<std::pair<short, short>> points;
+	std::pair<short, short> position;
 };
 
 class PointTracker
 {
-	std::vector<Motion> m_motions;
+	std::vector<TrackedPoint> m_points;
 	int m_id;
 	int m_timestamp;
 public:
@@ -18,8 +19,15 @@ public:
 	~PointTracker();
 
 	void track(std::vector<std::pair<short, short>> points);
-	void onTouch(const Motion& motion);
-	void onRelease(const Motion& motion);
-	const std::vector<Motion>& motions() const;
+
+	const std::vector<TrackedPoint>& points() const;
+
+	std::function<void(const TrackedPoint&)> onTouch;
+	std::function<void(const TrackedPoint&)> onMove;
+	std::function<void(const TrackedPoint&)> onRelease;
+private:
+	/*void onTouch(const TrackedPoint& point);
+	void onMove(const TrackedPoint& point);
+	void onRelease(const TrackedPoint& point);*/
 };
 

@@ -1,15 +1,18 @@
-// TouchVisualizer.cpp : Defines the entry point for the console application.
+// TouchDebugOutput.cpp : Defines the entry point for the console application.
 //
-
-#include "stdafx.h"
+#include <iostream>
+#include <sstream>
+#include <tchar.h>
 #include "../TouchDetector/DepthDetector.h"
 #include "../TouchDetector/ScanLineSegmenter.h"
 #include "../TouchDetector/CenterPointExtractor.h"
-#include "../TouchDetector/MotionRecorder.h"
-#include "ImageViewer.h"
+#include "../TouchDetector/PointTracker.h"
 #include <OpenNI.h>
-#include <SDLpp/Application.h>
-#include <SDLpp/GLContext.h>
+#include <chrono>
+#include "UdpSender.h"
+#include <algorithm>
+#include <numeric>
+
 
 using namespace openni;
 
@@ -19,8 +22,8 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	{
 		image = DepthImage(
 			DepthImage::Data(
-				static_cast<const uint16_t*>(frame.getData()),
-				static_cast<const uint16_t*>(frame.getData()) + frame.getWidth() * frame.getHeight()),
+			static_cast<const uint16_t*>(frame.getData()),
+			static_cast<const uint16_t*>(frame.getData()) + frame.getWidth() * frame.getHeight()),
 			frame.getWidth(),
 			frame.getHeight());
 	}
@@ -36,9 +39,24 @@ const int ThresholdMin = 30;
 const int ThresholdMax = 50;
 const int MinBlobSize = 40;
 
+void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& point)
+{
+	const char b = 1;
+	stream.write(&b, sizeof(char));
+	stream.write(reinterpret_cast<const char*>(&point.currentTimestamp), sizeof(int));
+	stream.write(reinterpret_cast<const char*>(&point.id), sizeof(int));
+	stream.write(reinterpret_cast<const char*>(&type), sizeof(char));
+	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(short));
+	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(short));
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	sdl::Application app;
+	if (argc < 3)
+	{
+		std::cout << "usage:\r\nTouchServer [host] [port]\r\n";
+		return 1;
+	}
 
 	DepthDetector detector(320, 240, ThresholdMin, ThresholdMax);
 	ScanLineSegmenter segmenter;
@@ -85,25 +103,51 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	detector.background(image);
 
+	UdpSender sender(argv[1], std::stoi(argv[2]));
+
+	PointTracker tracker;
+
+	tracker.onTouch = [&sender](const TrackedPoint& p){
+		std::stringstream s;
+		serializeEvent(s, 1, p);
+		sender.send(s.str());
+		/*std::stringstream s;
+		s << "Touched at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
+		std::cout << s.str() << "\r\n";
+		sender.send(s.str());*/
+	};
+
+	tracker.onMove = [&sender](const TrackedPoint& p){
+		std::stringstream s;
+		serializeEvent(s, 2, p);
+		sender.send(s.str());
+		//s << "Moved at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
+		
+		//std::cout << s.str() << "\r\n";
+	};
+
+	tracker.onRelease = [&sender](const TrackedPoint& p){
+		std::stringstream s;
+		serializeEvent(s, 3, p);
+		sender.send(s.str());
+		/*std::stringstream s;
+		s << "Released at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
+		std::cout << s.str() << "\r\n";
+		sender.send(s.str());*/
+	};
+
 	std::cout << "starting capture loop\r\n";
 
-	sdl::GLContext::setVersion(4, 3);
-
-	ImageViewer viewer;
-	viewer.add(0, 0, 320, 240);
-	viewer.add(320, 0, 320, 240);
-	viewer.add(0, 240, 320, 240);
-	viewer.add(320, 240, 320, 240);
 	
-	CenterPointExtractor centerPointExtractor(MinBlobSize);
-	MotionRecorder recorder;
 
+	CenterPointExtractor centerPointExtractor(MinBlobSize);
+	int frameId = 0;
 	while (true)
 	{
 		stream.readFrame(&frame);
 
 		copyFrameToImage(frame, image);
-		
+
 		detector.detect(image);
 
 		std::vector<LineSegment> segments;
@@ -113,26 +157,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::vector<std::pair<short, short>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
-		recorder.track(centerPoints);
-		
-		viewer.crosses.clear();
-		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<short, short>& coord) {
-			return Cross{ coord.first, coord.second };
-		});
-
-		viewer.lines.clear();
-		std::transform(begin(recorder.motions()), end(recorder.motions()), std::back_inserter(viewer.lines), [](const Motion& motion) {
-			return Lines{ motion.points };
-		});
-		
-		viewer[0].update(detector.mask());
-		viewer[1].update(image);
-		viewer[2].update(detector.background());
-		viewer[3].update(detector.difference());
-		
-		viewer.update();
+		tracker.track(centerPoints);
 	}
-	
+
 	openni::OpenNI::shutdown();
 	return 0;
 }
