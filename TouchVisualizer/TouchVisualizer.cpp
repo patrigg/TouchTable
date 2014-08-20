@@ -32,8 +32,8 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	}
 }
 
-const int ThresholdMin = 30;
-const int ThresholdMax = 50;
+const int ThresholdMin = 20;
+const int ThresholdMax = 70;
 const int MinBlobSize = 40;
 
 int _tmain(int argc, _TCHAR* argv[])

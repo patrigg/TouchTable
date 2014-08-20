@@ -46,6 +46,9 @@ void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std
 			y += line.y * pixels;
 			count += pixels;
 		}
-
+	}
+	if (count > m_minBlobSize)
+	{
+		centerPoints.push_back(std::pair<short, short>(x / count, y / count));
 	}
 }

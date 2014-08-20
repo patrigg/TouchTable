@@ -35,8 +35,8 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	}
 }
 
-const int ThresholdMin = 30;
-const int ThresholdMax = 50;
+const int ThresholdMin = 20;
+const int ThresholdMax = 70;
 const int MinBlobSize = 40;
 
 void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& point)
@@ -88,7 +88,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	mode.setFps(25);
 	mode.setPixelFormat(PIXEL_FORMAT_DEPTH_1_MM);
 	mode.setResolution(320, 240);
-	stream.setMirroringEnabled(true);
+	stream.setMirroringEnabled(false);
 	stream.setVideoMode(mode);
 	stream.start();
 
