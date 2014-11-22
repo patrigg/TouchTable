@@ -16,7 +16,7 @@ CenterPointExtractor::~CenterPointExtractor()
 {
 }
 
-void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std::vector<std::pair<short, short>>& centerPoints)
+void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std::vector<std::pair<double_t, double_t>>& centerPoints)
 {
 	short previousId = 0;
 
@@ -31,7 +31,7 @@ void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std
 		{
 			if (count > m_minBlobSize)
 			{
-				centerPoints.push_back(std::pair<short, short>(x / count, y / count));
+				centerPoints.push_back(std::pair<double_t, double_t>(x / (double)count, y / (double)count));
 			}
 			int pixels = line.xRight - line.xLeft + 1;
 			x = (pixels / 2 + line.xLeft) * pixels;
@@ -49,6 +49,6 @@ void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std
 	}
 	if (count > m_minBlobSize)
 	{
-		centerPoints.push_back(std::pair<short, short>(x / count, y / count));
+		centerPoints.push_back(std::pair<double_t, double_t>(x / (double)count, y / (double)count));
 	}
 }

@@ -6,7 +6,7 @@ struct TrackedPoint
 {
 	int currentTimestamp;
 	int id;
-	std::pair<short, short> position;
+	std::pair<double_t, double_t> position;
 };
 
 class PointTracker
@@ -18,7 +18,7 @@ public:
 	PointTracker();
 	~PointTracker();
 
-	void track(std::vector<std::pair<short, short>> points);
+	void track(std::vector<std::pair<double_t, double_t>> points);
 
 	const std::vector<TrackedPoint>& points() const;
 
