@@ -35,9 +35,14 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	}
 }
 
-const int ThresholdMin = 20;
-const int ThresholdMax = 70;
-const int MinBlobSize = 40;
+//const int ThresholdMin = 20;
+//const int ThresholdMax = 70;
+//const int MinBlobSize = 40;
+
+
+const int ThresholdMin = 40; // 30;
+const int ThresholdMax = 80;
+const int MinBlobSize = 60;
 
 void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& point)
 {
@@ -174,7 +179,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			);
 
 			std::cout.precision(2);
-			std::cout << "\rcenter point(0) at x: " << centerPoints[0].first << " y: " << centerPoints[0].second << " depth: " << depthValues[0] << "      ";
+			std::cout << "\rcenter point(0) at x: " << centerPoints[0].first << " y: " << centerPoints[0].second << " depth: " << depthValues[0] << "              ";
 
 
 			std::vector<std::pair<double_t, double_t>> scaledPoints;
@@ -182,8 +187,25 @@ int _tmain(int argc, _TCHAR* argv[])
 			// transformation von bildkoordinaten in weltkoordinaten
 			//		scaledPoints.push_back(std::make_pair(3, 4));
 		}
-
-		tracker.track(centerPoints);
+		static int ticks = 0;
+		if (ticks < 50)
+		{
+			
+			if (centerPoints.size()==1)
+			{
+				tracker.track(centerPoints);
+				ticks = 0;
+			}
+			else
+			{
+				++ticks;
+			}
+		}
+		else
+		{
+			tracker.track(centerPoints);
+		}
+		
 	}
 
 	openni::OpenNI::shutdown();
