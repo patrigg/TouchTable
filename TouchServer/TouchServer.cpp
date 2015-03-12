@@ -35,9 +35,14 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	}
 }
 
-const int ThresholdMin = 20;
-const int ThresholdMax = 70;
-const int MinBlobSize = 40;
+//const int ThresholdMin = 20;
+//const int ThresholdMax = 70;
+//const int MinBlobSize = 40;
+
+
+const int ThresholdMin = 40; // 30;
+const int ThresholdMax = 80;
+const int MinBlobSize = 60;
 
 void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& point)
 {
@@ -46,15 +51,15 @@ void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& po
 	stream.write(reinterpret_cast<const char*>(&point.currentTimestamp), sizeof(int));
 	stream.write(reinterpret_cast<const char*>(&point.id), sizeof(int));
 	stream.write(reinterpret_cast<const char*>(&type), sizeof(char));
-	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(short));
-	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(short));
+	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(double_t));
+	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(double_t));
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if (argc < 3)
 	{
-		std::cout << "usage:\r\nTouchServer [host] [port]\r\n";
+		std::cout << "usage:\r\nTouchServer [host] [port]\r\n" << "press a key to continue"; std::cin.get();
 		return 1;
 	}
 
@@ -66,7 +71,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Device device;
 	if (device.open(ANY_DEVICE) != STATUS_OK)
 	{
-		std::cout << "could not open any device\r\n";
+		std::cout << "could not open any device\r\n" << "press a key to continue"; std::cin.get();
 		return 1;
 	}
 
@@ -154,10 +159,53 @@ int _tmain(int argc, _TCHAR* argv[])
 		segmenter.segment(detector.mask(), segments);
 
 
-		std::vector<std::pair<short, short>> centerPoints;
+		std::vector<std::pair<double_t, double_t>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
-		tracker.track(centerPoints);
+		if (centerPoints.size() > 0) {
+			std::vector<uint16_t> depthValues(centerPoints.size());
+			int i;
+			i = 3;
+
+			std::transform(
+				begin(centerPoints), end(centerPoints),
+				begin(depthValues),
+				//lambda, das image in den scope erhält
+				[&image](std::pair<double_t, double_t> point)
+			{
+				//image.data() liefert ein array für das gesamte Bild zurück
+				return image.data()[point.first + point.second * image.width()];
+			}
+			);
+
+			std::cout.precision(2);
+			std::cout << "\rcenter point(0) at x: " << centerPoints[0].first << " y: " << centerPoints[0].second << " depth: " << depthValues[0] << "              ";
+
+
+			std::vector<std::pair<double_t, double_t>> scaledPoints;
+
+			// transformation von bildkoordinaten in weltkoordinaten
+			//		scaledPoints.push_back(std::make_pair(3, 4));
+		}
+		static int ticks = 0;
+		if (ticks < 50)
+		{
+			
+			if (centerPoints.size()==1)
+			{
+				tracker.track(centerPoints);
+				ticks = 0;
+			}
+			else
+			{
+				++ticks;
+			}
+		}
+		else
+		{
+			tracker.track(centerPoints);
+		}
+		
 	}
 
 	openni::OpenNI::shutdown();

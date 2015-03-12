@@ -13,7 +13,7 @@ PointTracker::~PointTracker()
 {
 }
 
-void PointTracker::track(std::vector<std::pair<short, short>> points)
+void PointTracker::track(std::vector<std::pair<double_t, double_t>> points)
 {
 	std::vector<TrackedPoint> currentPoints;
 	currentPoints.reserve(points.size());
@@ -26,7 +26,7 @@ void PointTracker::track(std::vector<std::pair<short, short>> points)
 		std::vector<int> distances;
 		
 		auto& base = p.position;
-		std::transform(begin(points), end(points), std::back_inserter(distances), [&base](const std::pair<short, short>& p)
+		std::transform(begin(points), end(points), std::back_inserter(distances), [&base](const std::pair<double_t, double_t>& p)
 		{
 			auto diffx = p.first - base.first;
 			auto diffy = p.second - base.second;
@@ -69,7 +69,7 @@ void PointTracker::track(std::vector<std::pair<short, short>> points)
 	}
 
 	m_points = std::move(currentPoints);
-	std::transform(begin(points), end(points), std::back_inserter(m_points), [this](const std::pair<short, short>& p){
+	std::transform(begin(points), end(points), std::back_inserter(m_points), [this](const std::pair<double_t, double_t>& p){
 		TrackedPoint t { m_id++, m_timestamp, { p } };
 		if (onTouch)
 		{

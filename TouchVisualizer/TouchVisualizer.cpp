@@ -32,9 +32,13 @@ void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
 	}
 }
 
-const int ThresholdMin = 20;
-const int ThresholdMax = 70;
-const int MinBlobSize = 40;
+//const int ThresholdMin = 20;
+//const int ThresholdMax = 70;
+//const int MinBlobSize = 40;
+
+const int ThresholdMin = 30;
+const int ThresholdMax = 90;
+const int MinBlobSize = 50;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -110,13 +114,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		segmenter.segment(detector.mask(), segments);
 
 
-		std::vector<std::pair<short, short>> centerPoints;
+		std::vector<std::pair<double_t, double_t>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
 		recorder.track(centerPoints);
 		
 		viewer.crosses.clear();
-		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<short, short>& coord) {
+		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<double_t, double_t>& coord) {
 			return Cross{ coord.first, coord.second };
 		});
 
