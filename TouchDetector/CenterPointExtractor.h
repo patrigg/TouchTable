@@ -10,6 +10,6 @@ public:
 	CenterPointExtractor(short minBlobSize);
 	~CenterPointExtractor();
 
-	void extract(const std::vector<LineSegment>& segments, std::vector<std::pair<short, short>>& centerPoints);
+	void extract(const std::vector<LineSegment>& segments, std::vector<std::pair<float, float>>& centerPoints);
 };
 

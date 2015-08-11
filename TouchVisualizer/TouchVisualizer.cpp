@@ -110,13 +110,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		segmenter.segment(detector.mask(), segments);
 
 
-		std::vector<std::pair<short, short>> centerPoints;
+		std::vector<std::pair<float, float>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
 		recorder.track(centerPoints);
 		
 		viewer.crosses.clear();
-		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<short, short>& coord) {
+		std::transform(begin(centerPoints), end(centerPoints), std::back_inserter(viewer.crosses), [](std::pair<float, float>& coord) {
 			return Cross{ coord.first, coord.second };
 		});
 

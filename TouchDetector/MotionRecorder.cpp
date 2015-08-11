@@ -13,17 +13,17 @@ MotionRecorder::~MotionRecorder()
 {
 }
 
-void MotionRecorder::track(std::vector<std::pair<short, short>> points)
+void MotionRecorder::track(std::vector<std::pair<float, float>> points)
 {
 	for (auto& m : m_motions)
 	{
 		if (points.empty())
 			break;
 
-		std::vector<int> distances;
+		std::vector<float> distances;
 
 		auto& base = m.points.back();
-		std::transform(begin(points), end(points), std::back_inserter(distances), [&base](const std::pair<short, short>& p)
+		std::transform(begin(points), end(points), std::back_inserter(distances), [&base](const std::pair<float, float>& p)
 		{
 			auto diffx = p.first - base.first;
 			auto diffy = p.second - base.second;
@@ -52,7 +52,7 @@ void MotionRecorder::track(std::vector<std::pair<short, short>> points)
 		return this->m_timestamp != m.currentTimestamp;
 	}) - begin(m_motions));
 
-	std::transform(begin(points), end(points), std::back_inserter(m_motions), [this](const std::pair<short, short>& p){
+	std::transform(begin(points), end(points), std::back_inserter(m_motions), [this](const std::pair<float, float>& p){
 		Motion m{ m_id++, m_timestamp, { p } };
 		onTouch(m);
 		return m;

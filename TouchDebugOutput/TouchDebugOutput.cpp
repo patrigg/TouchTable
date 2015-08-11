@@ -100,7 +100,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		segmenter.segment(detector.mask(), segments);
 
 
-		std::vector<std::pair<short, short>> centerPoints;
+		std::vector<std::pair<float, float>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
 		if (centerPoints.size())

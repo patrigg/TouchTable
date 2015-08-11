@@ -7,8 +7,8 @@ namespace sdl
 
 struct Cross
 {
-	int m_x;
-	int m_y;
+	float m_x;
+	float m_y;
 	void draw(sdl::Renderer& renderer);
 };
 

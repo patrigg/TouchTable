@@ -46,8 +46,8 @@ void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& po
 	stream.write(reinterpret_cast<const char*>(&point.currentTimestamp), sizeof(int));
 	stream.write(reinterpret_cast<const char*>(&point.id), sizeof(int));
 	stream.write(reinterpret_cast<const char*>(&type), sizeof(char));
-	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(short));
-	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(short));
+	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(float));
+	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(float));
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -154,7 +154,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		segmenter.segment(detector.mask(), segments);
 
 
-		std::vector<std::pair<short, short>> centerPoints;
+		std::vector<std::pair<float, float>> centerPoints;
 		centerPointExtractor.extract(segments, centerPoints);
 
 		tracker.track(centerPoints);

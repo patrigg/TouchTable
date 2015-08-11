@@ -9,7 +9,7 @@ namespace sdl
 class Lines
 {
 public:
-	std::vector<std::pair<short, short>> points;
+	std::vector<std::pair<float, float>> points;
 
 	void draw(sdl::Renderer& renderer);
 };
