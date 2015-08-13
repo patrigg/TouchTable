@@ -2,7 +2,11 @@
 //
 #include <iostream>
 #include <sstream>
+
+#ifdef WIN32
 #include <tchar.h>
+#endif
+
 #include "../TouchDetector/DepthDetector.h"
 #include "../TouchDetector/ScanLineSegmenter.h"
 #include "../TouchDetector/CenterPointExtractor.h"
@@ -49,8 +53,11 @@ void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& po
 	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(float));
 	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(float));
 }
-
+#ifdef WIN32
 int _tmain(int argc, _TCHAR* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
 {
 	if (argc < 3)
 	{
@@ -85,7 +92,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	VideoStream stream;
 	stream.create(device, SENSOR_DEPTH);
 	VideoMode mode;
-	mode.setFps(25);
+	mode.setFps(60);
 	mode.setPixelFormat(PIXEL_FORMAT_DEPTH_1_MM);
 	mode.setResolution(320, 240);
 	stream.setMirroringEnabled(false);

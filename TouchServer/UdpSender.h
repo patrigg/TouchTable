@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <boost_1_56_0\boost\asio.hpp>
+#include <boost/asio.hpp>
 
 class UdpSender
 {
