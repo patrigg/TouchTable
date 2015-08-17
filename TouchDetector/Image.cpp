@@ -17,6 +17,11 @@ Image<T>::Image(int width, int height)
 	m_data.resize(width * height);
 }
 
+template<typename T>
+Image<T>::Image()
+	: m_width(0), m_height(0)
+{
+}
 
 template<typename T>
 Image<T>::~Image()

@@ -2,172 +2,81 @@
 //
 #include <iostream>
 #include <sstream>
+#include "targetver.h"
 
 #ifdef WIN32
 #include <tchar.h>
 #endif
 
-#include "../TouchDetector/DepthDetector.h"
-#include "../TouchDetector/ScanLineSegmenter.h"
-#include "../TouchDetector/CenterPointExtractor.h"
-#include "../TouchDetector/PointTracker.h"
-#include <OpenNI.h>
-#include <chrono>
 #include "UdpSender.h"
-#include <algorithm>
-#include <numeric>
+#include "UdpReceiver.h"
 
+#include "StreamSender.h"
+#include "StreamReceiver.h"
 
-using namespace openni;
+#include "TouchTracking.h"
+#include "EventSerializer.h"
+#include "TouchEvent.h"
+#include "Configurator.h"
+#include <memory>
 
-void copyFrameToImage(VideoFrameRef frame, DepthImage& image)
-{
-	if (image.height() != frame.getHeight() || image.width() != frame.getWidth())
-	{
-		image = DepthImage(
-			DepthImage::Data(
-			static_cast<const uint16_t*>(frame.getData()),
-			static_cast<const uint16_t*>(frame.getData()) + frame.getWidth() * frame.getHeight()),
-			frame.getWidth(),
-			frame.getHeight());
-	}
-	else
-	{
-		image.data(DepthImage::Data(
-			static_cast<const uint16_t*>(frame.getData()),
-			static_cast<const uint16_t*>(frame.getData()) + frame.getWidth() * frame.getHeight()));
-	}
-}
-
-const int ThresholdMin = 20;
-const int ThresholdMax = 70;
-const int MinBlobSize = 40;
-
-void serializeEvent(std::stringstream& stream, char type, const TrackedPoint& point)
-{
-	const char b = 1;
-	stream.write(&b, sizeof(char));
-	stream.write(reinterpret_cast<const char*>(&point.currentTimestamp), sizeof(int));
-	stream.write(reinterpret_cast<const char*>(&point.id), sizeof(int));
-	stream.write(reinterpret_cast<const char*>(&type), sizeof(char));
-	stream.write(reinterpret_cast<const char*>(&point.position.first), sizeof(float));
-	stream.write(reinterpret_cast<const char*>(&point.position.second), sizeof(float));
-}
 #ifdef WIN32
 int _tmain(int argc, _TCHAR* argv[])
 #else
 int main(int argc, char* argv[])
 #endif
 {
-	if (argc < 3)
+	if (argc < 4)
 	{
-		std::cout << "usage:\r\nTouchServer [host] [port]\r\n";
+		std::cout << "usage:\r\nTouchServer udp [host] [port] | console\r\n";
 		return 1;
 	}
 
-	DepthDetector detector(320, 240, ThresholdMin, ThresholdMax);
-	ScanLineSegmenter segmenter;
+	boost::asio::io_service io_service;
 
-	OpenNI::initialize();
-
-	Device device;
-	if (device.open(ANY_DEVICE) != STATUS_OK)
+	std::unique_ptr < ISender > sender;
+	//
+	std::unique_ptr<IReceiver> receiver;
+	
+	if (std::string("udp") == argv[1])
 	{
-		std::cout << "could not open any device\r\n";
-		return 1;
+		sender = std::make_unique<UdpSender>(io_service, argv[1], std::stoi(argv[2]));
+		receiver = std::make_unique<UdpReceiver>(io_service, 14000);
 	}
-
-	if (device.hasSensor(SENSOR_DEPTH))
+	else if (std::string("console") == argv[1])
 	{
-		auto info = device.getSensorInfo(SENSOR_DEPTH);
-		auto& modes = info->getSupportedVideoModes();
-		std::cout << "depth sensor supported modes:\r\n";
-		for (int i = 0; i < modes.getSize(); ++i)
-		{
-			auto& mode = modes[i];
-			std::cout << "pixel format: " << mode.getPixelFormat() << "\t with: " << mode.getResolutionX() << "x" << mode.getResolutionY() << "@" << mode.getFps() << " fps\r\n";
-		}
+		sender = std::make_unique<StreamSender>(std::cout);
+		receiver = std::make_unique<StreamReceiver>(std::cin, *sender);
 	}
+	
+	EventSerializer serializer(EventSerializer::Mode::Json);
 
-	VideoStream stream;
-	stream.create(device, SENSOR_DEPTH);
-	VideoMode mode;
-	mode.setFps(60);
-	mode.setPixelFormat(PIXEL_FORMAT_DEPTH_1_MM);
-	mode.setResolution(320, 240);
-	stream.setMirroringEnabled(false);
-	stream.setVideoMode(mode);
-	stream.start();
+	TouchTracking tracking;
+
+	tracking.onTouchEvent([&sender, &serializer](const TouchEvent& evt){
+		std::stringstream s;
+		serializer.serialize(s, evt);
+		sender->send(s.str());
+	});
+
+	Configurator config(tracking, serializer);
+	
+	receiver->onReceive = std::bind(&Configurator::receive, config, std::placeholders::_1, std::placeholders::_2);
+
 
 	std::cout << "press any key to capture background\r\n";
 	std::cin.get();
+	
+	tracking.start();
+	
+	tracking.removeBackground();
 
-	VideoFrameRef frame;
-	stream.readFrame(&frame);
 
-	DepthImage image(320, 240);
-	copyFrameToImage(frame, image);
-
-	detector.background(image);
-
-	UdpSender sender(argv[1], std::stoi(argv[2]));
-
-	PointTracker tracker;
-
-	tracker.onTouch = [&sender](const TrackedPoint& p){
-		std::stringstream s;
-		serializeEvent(s, 1, p);
-		sender.send(s.str());
-		/*std::stringstream s;
-		s << "Touched at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
-		std::cout << s.str() << "\r\n";
-		sender.send(s.str());*/
-	};
-
-	tracker.onMove = [&sender](const TrackedPoint& p){
-		std::stringstream s;
-		serializeEvent(s, 2, p);
-		sender.send(s.str());
-		//s << "Moved at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
-		
-		//std::cout << s.str() << "\r\n";
-	};
-
-	tracker.onRelease = [&sender](const TrackedPoint& p){
-		std::stringstream s;
-		serializeEvent(s, 3, p);
-		sender.send(s.str());
-		/*std::stringstream s;
-		s << "Released at: " << p.currentTimestamp << " id: " << p.id << " x: " << p.position.first << " y: " << p.position.second;
-		std::cout << s.str() << "\r\n";
-		sender.send(s.str());*/
-	};
 
 	std::cout << "starting capture loop\r\n";
 
-	
+	io_service.run();
 
-	CenterPointExtractor centerPointExtractor(MinBlobSize);
-	int frameId = 0;
-	while (true)
-	{
-		stream.readFrame(&frame);
-
-		copyFrameToImage(frame, image);
-
-		detector.detect(image);
-
-		std::vector<LineSegment> segments;
-		segmenter.segment(detector.mask(), segments);
-
-
-		std::vector<std::pair<float, float>> centerPoints;
-		centerPointExtractor.extract(segments, centerPoints);
-
-		tracker.track(centerPoints);
-	}
-
-	openni::OpenNI::shutdown();
 	return 0;
 }
 

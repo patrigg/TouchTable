@@ -2,7 +2,7 @@
 
 
 CenterPointExtractor::CenterPointExtractor()
-	: m_minBlobSize(1)
+	: m_minBlobSize(40)
 {
 }
 
@@ -51,4 +51,9 @@ void CenterPointExtractor::extract(const std::vector<LineSegment>& segments, std
 	{
 		centerPoints.push_back(std::pair<float, float>(x / (float)count, y / (float)count));
 	}
+}
+
+void CenterPointExtractor::minBlobSize(short size)
+{
+	m_minBlobSize = size;
 }

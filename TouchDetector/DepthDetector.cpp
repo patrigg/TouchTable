@@ -2,17 +2,31 @@
 #include <algorithm>
 
 
-DepthDetector::DepthDetector(int width, int height)
-: m_width(width), m_height(height), m_background(width, height), m_mask(width, height), m_difference(width, height), m_thresholdMin(30), m_thresholdMax(80)
+DepthDetector::DepthDetector()
+: m_thresholdMin(30), m_thresholdMax(80)
 {
 }
 
-DepthDetector::DepthDetector(int width, int height, int thresholdMin, int thresholdMax)
-: m_width(width), m_height(height), m_background(width, height), m_mask(width, height), m_difference(width, height), m_thresholdMin(thresholdMin), m_thresholdMax(thresholdMax)
+DepthDetector::DepthDetector(int thresholdMin, int thresholdMax)
+: m_thresholdMin(thresholdMin), m_thresholdMax(thresholdMax)
 {
 }
 
+void DepthDetector::threshold(int min, int max)
+{
+	m_thresholdMin = min;
+	m_thresholdMax = max;
+}
 
+void DepthDetector::thresholdMin(int min)
+{
+	m_thresholdMin = min;
+}
+
+void DepthDetector::thresholdMax(int max)
+{
+	m_thresholdMax = max;
+}
 
 DepthDetector::~DepthDetector()
 {
@@ -20,19 +34,16 @@ DepthDetector::~DepthDetector()
 
 void DepthDetector::background(DepthImage image)
 {
-	if (m_width != image.width() || m_height != image.height())
-	{
-		throw "incompatible image resolutions";
-	}
-
 	m_background = std::move(image);
 }
 
 void DepthDetector::detect(const DepthImage& image)
 {
-	if (m_width != image.width() || m_height != image.height())
+	if (m_background.width() != image.width() || m_background.height() != image.height())
 	{
-		throw "incompatible image resolutions";
+		m_background = image;
+		m_difference = Image<int>(image.width(), image.height());
+		m_mask = Image<uint8_t>(image.width(), image.height());
 	}
 
 	std::transform(

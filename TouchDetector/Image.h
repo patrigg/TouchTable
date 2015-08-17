@@ -47,6 +47,7 @@ public:
 	*/
 	Image(Data data, int width, int height);
 	Image(int width, int height);
+	Image();
 	~Image();
 
 	int width() const;

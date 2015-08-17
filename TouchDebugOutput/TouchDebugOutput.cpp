@@ -37,7 +37,7 @@ const int MinBlobSize = 40;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	DepthDetector detector(320, 240, ThresholdMin, ThresholdMax);
+	DepthDetector detector(ThresholdMin, ThresholdMax);
 	ScanLineSegmenter segmenter;
 
 	OpenNI::initialize();

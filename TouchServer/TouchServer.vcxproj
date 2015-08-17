@@ -150,11 +150,25 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Configurator.h" />
+    <ClInclude Include="EventSerializer.h" />
+    <ClInclude Include="IReceiver.h" />
+    <ClInclude Include="StreamReceiver.h" />
+    <ClInclude Include="StreamSender.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TouchEvent.h" />
+    <ClInclude Include="TouchTracking.h" />
+    <ClInclude Include="UdpReceiver.h" />
     <ClInclude Include="UdpSender.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Configurator.cpp" />
+    <ClCompile Include="EventSerializer.cpp" />
+    <ClCompile Include="StreamReceiver.cpp" />
+    <ClCompile Include="StreamSender.cpp" />
     <ClCompile Include="TouchServer.cpp" />
+    <ClCompile Include="TouchTracking.cpp" />
+    <ClCompile Include="UdpReceiver.cpp" />
     <ClCompile Include="UdpSender.cpp" />
   </ItemGroup>
   <ItemGroup>

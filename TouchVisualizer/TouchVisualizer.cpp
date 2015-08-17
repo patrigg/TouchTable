@@ -40,7 +40,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	sdl::Application app;
 
-	DepthDetector detector(320, 240, ThresholdMin, ThresholdMax);
+	DepthDetector detector(ThresholdMin, ThresholdMax);
 	ScanLineSegmenter segmenter;
 
 	OpenNI::initialize();
