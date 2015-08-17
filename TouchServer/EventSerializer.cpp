@@ -2,7 +2,7 @@
 #include "TouchEvent.h"
 
 EventSerializer::EventSerializer(Mode mode)
-	: mode(mode)
+	: m_mode(mode)
 {
 }
 
@@ -13,7 +13,7 @@ EventSerializer::~EventSerializer()
 
 void EventSerializer::serialize(std::ostream& stream, const TouchEvent& evt)
 {
-	switch (mode)
+	switch (m_mode)
 	{
 	case Mode::Binary:
 		return serializeBinary(stream, evt);
@@ -43,4 +43,9 @@ void EventSerializer::serializeJson(std::ostream& stream, const TouchEvent& evt)
 	stream << "\t\t\"y\": " << evt.point.position.second << ",\r\n";
 	stream << "\t}\r\n";
 	stream << "}\r\n";
+}
+
+void EventSerializer::mode(EventSerializer::Mode mode)
+{
+	m_mode = mode;
 }

@@ -21,7 +21,13 @@ void PointTracker::track(std::vector<std::pair<float, float>> points)
 	for (const auto& p : m_points)
 	{
 		if (points.empty())
-			break;
+		{
+			if (onRelease)
+			{
+				onRelease(p);
+			}
+			continue;
+		}
 
 		std::vector<float> distances;
 		
@@ -36,7 +42,7 @@ void PointTracker::track(std::vector<std::pair<float, float>> points)
 
 		auto min = std::min_element(begin(distances), end(distances));
 
-		if (min != end(distances) && *min < 100)
+		if ((min != end(distances)) && (*min < 100))
 		{
 			auto minPoint = begin(points) + (min - begin(distances));
 
@@ -70,7 +76,7 @@ void PointTracker::track(std::vector<std::pair<float, float>> points)
 
 	m_points = std::move(currentPoints);
 	std::transform(begin(points), end(points), std::back_inserter(m_points), [this](const std::pair<float, float>& p){
-		TrackedPoint t { m_id++, m_timestamp, { p } };
+		TrackedPoint t{ m_timestamp, m_id++, { p } };
 		if (onTouch)
 		{
 			onTouch(t);

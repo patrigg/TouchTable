@@ -13,10 +13,12 @@ public:
 	};
 
 	void serialize(std::ostream& stream, const TouchEvent& evt);
+	void mode(EventSerializer::Mode mode);
+
 	EventSerializer(Mode mode);
 	~EventSerializer();
 private:
-	Mode mode;
+	Mode m_mode;
 	void serializeBinary(std::ostream& stream, const TouchEvent& evt);
 	void serializeJson(std::ostream& stream, const TouchEvent& evt);
 };

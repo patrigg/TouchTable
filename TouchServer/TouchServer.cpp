@@ -26,7 +26,7 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-	if (argc < 4)
+	if (argc < 4 && argc != 2)
 	{
 		std::cout << "usage:\r\nTouchServer udp [host] [port] | console\r\n";
 		return 1;
@@ -65,17 +65,18 @@ int main(int argc, char* argv[])
 
 
 	std::cout << "press any key to capture background\r\n";
-	std::cin.get();
+	//std::cin.get();
 	
 	tracking.start();
 	
-	tracking.removeBackground();
+	//tracking.removeBackground();
 
 
 
 	std::cout << "starting capture loop\r\n";
 
-	io_service.run();
+	receiver->run();
+	//io_service.run();
 
 	return 0;
 }
