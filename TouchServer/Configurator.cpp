@@ -28,6 +28,9 @@ void Configurator::receive(const std::string& data, ISender& reply)
 	int messageId = - 1;
 
 	auto members = root.getMemberNames();
+	
+	bool getConfig = false;
+
 	for (auto& member : members)
 	{
 		if (member == "message_id")
@@ -35,16 +38,28 @@ void Configurator::receive(const std::string& data, ISender& reply)
 			messageId = root[member].asInt();
 			continue;
 		}
+		else if (member == "get_configuration")
+		{
+			getConfig = true;
+			continue;
+		}
 		auto& item = root[member];
 		
 		update(member, item);
 	}
-	replyOk(messageId, reply);
+	if (getConfig)
+	{
+		replyConfig(messageId, reply);
+	}
+	else
+	{
+		replyOk(messageId, reply);
+	}
 }
 
 void Configurator::update(const std::string& name, const Json::Value& value)
 {
-	if (name == "subtract_background" && value.asBool())
+	if (name == "remove_background" && value.asBool())
 	{
 		tracking.removeBackground();
 	}
@@ -60,6 +75,15 @@ void Configurator::update(const std::string& name, const Json::Value& value)
 			serializer.mode(EventSerializer::Mode::Binary);
 		}
 	}
+	else if (name == "horizontal_flipped")
+	{
+		tracking.flipHorizontal(value.asBool());
+	}
+	else if (name == "vertical_flipped")
+	{
+		tracking.flipVertical(value.asBool());
+	}
+
 }
 
 void Configurator::replyOk(int messageId, ISender& reply)
@@ -76,6 +100,18 @@ void Configurator::replyFailed(int messageId, ISender& reply)
 	std::stringstream s;
 	s << "{\r\n\t\"message_id\": " << messageId << ",\r\n";
 	s << "\t\"status\": \"failed\"\r\n";
+	s << "}\r\n";
+	reply.send(s.str());
+}
+
+void Configurator::replyConfig(int messageId, ISender& reply)
+{
+	std::stringstream s;
+	s << "{\r\n\t\"message_id\": " << messageId << ",\r\n";
+	s << "\t\"status\": \"ok\",\r\n";
+	s << "\t\"horizontal_flipped\": " << (tracking.horizontalFlipped() ? "true" : "false") << ",\r\n";
+	s << "\t\"vertical_flipped\": " << (tracking.verticalFlipped() ? "true" : "false") << ",\r\n";
+	s << "\t\"data_format\": " << ((serializer.mode() == EventSerializer::Mode::Binary) ? "binary" : "json") << "\r\n";
 	s << "}\r\n";
 	reply.send(s.str());
 }

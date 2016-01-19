@@ -38,9 +38,22 @@ TouchTracking::TouchTracking()
 void TouchTracking::onTouchEvent(const std::function<void(const TouchEvent&)>& handler)
 {
 	std::lock_guard<std::mutex> lock(m);
-	tracker.onTouch = [handler](const TrackedPoint& p){ handler({ TouchEvent::Touch, p }); };
-	tracker.onMove = [handler](const TrackedPoint& p){ handler({ TouchEvent::Move, p }); };
-	tracker.onRelease = [handler](const TrackedPoint& p){ handler({ TouchEvent::Release, p }); };
+	tracker.onTouch = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Touch, flip(p) }); };
+	tracker.onMove = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Move, flip(p) }); };
+	tracker.onRelease = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Release, flip(p) }); };
+}
+
+TrackedPoint TouchTracking::flip(TrackedPoint p)
+{
+	if (hFlipped)
+	{
+		p.position.first = image.width() - p.position.first;
+	}
+	if (vFlipped)
+	{
+		p.position.second = image.height() - p.position.second;
+	}
+	return p;
 }
 
 void TouchTracking::initializeVideo()
@@ -153,4 +166,24 @@ void TouchTracking::runSingle()
 	centerPointExtractor.extract(segments, centerPoints);
 
 	tracker.track(centerPoints);
+}
+
+void TouchTracking::flipHorizontal(bool value)
+{
+	hFlipped = value;
+}
+
+bool TouchTracking::horizontalFlipped() const
+{
+	return hFlipped;
+}
+
+void TouchTracking::flipVertical(bool value)
+{
+	vFlipped = value;
+}
+
+bool TouchTracking::verticalFlipped() const
+{
+	return vFlipped;
 }

@@ -38,6 +38,10 @@ class TouchTracking
 	void initializeVideo();
 	void run();
 	void runSingle();
+	bool hFlipped = false;
+	bool vFlipped = false;
+
+	TrackedPoint flip(TrackedPoint p);
 
 public:
 	void start();
@@ -48,6 +52,11 @@ public:
 	void removeBackground();
 
 	const std::vector<openni::VideoMode>& videoModes() const;
+
+	void flipHorizontal(bool value);
+	bool horizontalFlipped() const;
+	void flipVertical(bool value);
+	bool verticalFlipped() const;
 
 	TouchTracking();
 	~TouchTracking();

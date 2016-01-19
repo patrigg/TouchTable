@@ -25,10 +25,12 @@ void EventSerializer::serialize(std::ostream& stream, const TouchEvent& evt)
 void EventSerializer::serializeBinary(std::ostream& stream, const TouchEvent& evt)
 {
 	const char b = 1;
+	char type = evt.type + 1;
+
 	stream.write(&b, sizeof(char));
 	stream.write(reinterpret_cast<const char*>(&evt.point.currentTimestamp), sizeof(int));
 	stream.write(reinterpret_cast<const char*>(&evt.point.id), sizeof(int));
-	stream.write(reinterpret_cast<const char*>(&evt.type + 1), sizeof(char));
+	stream.write(reinterpret_cast<const char*>(&type), sizeof(char));
 	stream.write(reinterpret_cast<const char*>(&evt.point.position.first), sizeof(float));
 	stream.write(reinterpret_cast<const char*>(&evt.point.position.second), sizeof(float));
 }
@@ -48,4 +50,9 @@ void EventSerializer::serializeJson(std::ostream& stream, const TouchEvent& evt)
 void EventSerializer::mode(EventSerializer::Mode mode)
 {
 	m_mode = mode;
+}
+
+EventSerializer::Mode EventSerializer::mode() const
+{
+	return m_mode;
 }

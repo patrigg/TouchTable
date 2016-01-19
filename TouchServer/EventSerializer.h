@@ -14,6 +14,7 @@ public:
 
 	void serialize(std::ostream& stream, const TouchEvent& evt);
 	void mode(EventSerializer::Mode mode);
+	Mode mode() const;
 
 	EventSerializer(Mode mode);
 	~EventSerializer();

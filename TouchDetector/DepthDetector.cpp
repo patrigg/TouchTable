@@ -35,15 +35,15 @@ DepthDetector::~DepthDetector()
 void DepthDetector::background(DepthImage image)
 {
 	m_background = std::move(image);
+	m_difference = Image<int>(image.width(), image.height());
+	m_mask = Image<uint8_t>(image.width(), image.height());
 }
 
 void DepthDetector::detect(const DepthImage& image)
 {
 	if (m_background.width() != image.width() || m_background.height() != image.height())
 	{
-		m_background = image;
-		m_difference = Image<int>(image.width(), image.height());
-		m_mask = Image<uint8_t>(image.width(), image.height());
+		background(image);
 	}
 
 	std::transform(
