@@ -2,7 +2,7 @@
 #include <string>
 #include "TouchTracking.h"
 #include "EventSerializer.h"
-#include "json\json-forwards.h"
+#include "json/json-forwards.h"
 
 class ISender;
 

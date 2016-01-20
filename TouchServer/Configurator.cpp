@@ -2,7 +2,7 @@
 #include "IReceiver.h"
 #include <sstream>
 #include <memory>
-#include "json\json.h"
+#include "json/json.h"
 
 
 Configurator::Configurator(TouchTracking& tracking, EventSerializer& serializer)
