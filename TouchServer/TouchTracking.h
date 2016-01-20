@@ -33,7 +33,7 @@ class TouchTracking
 	std::mutex m;
 
 	std::vector<openni::VideoMode> m_videoModes;
-	std::atomic<bool> isRunning = false;
+	std::atomic<bool> isRunning = { false };
 
 	void initializeVideo();
 	void run();

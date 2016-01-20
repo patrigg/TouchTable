@@ -17,7 +17,7 @@ Configurator::~Configurator()
 
 void Configurator::receive(const std::string& data, ISender& reply)
 {
-	std::unique_ptr<Json::CharReader> reader(Json::CharReaderBuilder::CharReaderBuilder().newCharReader());
+	std::unique_ptr<Json::CharReader> reader(Json::CharReaderBuilder().newCharReader());
 	Json::Value root;
 	std::string err;
 	if (!reader->parse(data.c_str(), data.c_str() + data.length(), &root, &err))
