@@ -2,9 +2,9 @@
 //
 #include <iostream>
 #include <sstream>
-#include "targetver.h"
 
 #ifdef WIN32
+#include "targetver.h"
 #include <tchar.h>
 #endif
 
