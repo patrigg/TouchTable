@@ -62,12 +62,12 @@ void TouchTracking::initializeVideo()
 
 	if (device.open(ANY_DEVICE) != STATUS_OK)
 	{
-		throw std::exception("could not open any device!");
+		throw std::runtime_error("could not open any device!");
 	}
 
 	if (!device.hasSensor(SENSOR_DEPTH))
 	{
-		throw std::exception("sensor cannot receive depth!");
+		throw std::runtime_error("sensor cannot receive depth!");
 	}
 
 	auto info = device.getSensorInfo(SENSOR_DEPTH);
