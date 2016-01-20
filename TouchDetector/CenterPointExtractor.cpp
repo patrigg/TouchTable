@@ -57,3 +57,8 @@ void CenterPointExtractor::minBlobSize(short size)
 {
 	m_minBlobSize = size;
 }
+
+short CenterPointExtractor::minBlobSize() const
+{
+	return m_minBlobSize;
+}

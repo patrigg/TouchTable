@@ -28,6 +28,16 @@ void DepthDetector::thresholdMax(int max)
 	m_thresholdMax = max;
 }
 
+int DepthDetector::thresholdMin() const
+{
+	return m_thresholdMin;
+}
+
+int DepthDetector::thresholdMax() const
+{
+	return m_thresholdMax;
+}
+
 DepthDetector::~DepthDetector()
 {
 }

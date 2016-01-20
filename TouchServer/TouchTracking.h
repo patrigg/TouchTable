@@ -46,6 +46,7 @@ class TouchTracking
 public:
 	void start();
 	void stop();
+	bool running() const;
 
 	void videoMode(const openni::VideoMode& mode);
 
@@ -57,6 +58,17 @@ public:
 	bool horizontalFlipped() const;
 	void flipVertical(bool value);
 	bool verticalFlipped() const;
+
+	short minBlobSize() const;
+	void minBlobSize(short size);
+
+	void depthThreshold(int min, int max);
+
+	void depthThresholdMin(int min);
+	void depthThresholdMax(int max);
+
+	int depthThresholdMin() const;
+	int depthThresholdMax() const;
 
 	TouchTracking();
 	~TouchTracking();

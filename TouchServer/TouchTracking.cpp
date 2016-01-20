@@ -130,6 +130,11 @@ void TouchTracking::stop()
 	stream.stop();
 }
 
+bool TouchTracking::running() const
+{
+	return isRunning;
+}
+
 void TouchTracking::run()
 {
 	while (isRunning)
@@ -186,4 +191,39 @@ void TouchTracking::flipVertical(bool value)
 bool TouchTracking::verticalFlipped() const
 {
 	return vFlipped;
+}
+
+short TouchTracking::minBlobSize() const
+{
+	return centerPointExtractor.minBlobSize();
+}
+
+void TouchTracking::minBlobSize(short size)
+{
+	centerPointExtractor.minBlobSize(size);
+}
+
+void TouchTracking::depthThresholdMin(int min)
+{
+	detector.thresholdMin(min);
+}
+
+void TouchTracking::depthThresholdMax(int max)
+{
+	detector.thresholdMax(max);
+}
+
+void TouchTracking::depthThreshold(int min, int max)
+{
+	detector.threshold(min, max);
+}
+
+int TouchTracking::depthThresholdMin() const
+{
+	return detector.thresholdMin();
+}
+
+int TouchTracking::depthThresholdMax() const
+{
+	return detector.thresholdMax();
 }

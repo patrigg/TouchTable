@@ -17,6 +17,8 @@ public:
 	void threshold(int min, int max);
 	void thresholdMin(int min);
 	void thresholdMax(int max);
+	int thresholdMin() const;
+	int thresholdMax() const;
 
 private:
 	DepthImage m_background;

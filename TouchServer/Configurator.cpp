@@ -83,7 +83,36 @@ void Configurator::update(const std::string& name, const Json::Value& value)
 	{
 		tracking.flipVertical(value.asBool());
 	}
-
+	else if (name == "min_blob_size")
+	{
+		tracking.minBlobSize(value.asInt());
+	}
+	else if (name == "depth_threshold_min")
+	{
+		tracking.depthThresholdMin(value.asInt());
+	}
+	else if (name == "depth_threshold_max")
+	{
+		tracking.depthThresholdMax(value.asInt());
+	}
+	else if (name == "depth_threshold")
+	{
+		tracking.depthThreshold(value["min"].asInt(), value["max"].asInt());
+	}
+	else if (name == "start")
+	{
+		if (value.asBool())
+		{
+			tracking.start();
+		}
+	}
+	else if (name == "stop")
+	{
+		if (value.asBool())
+		{
+			tracking.stop();
+		}
+	}
 }
 
 void Configurator::replyOk(int messageId, ISender& reply)
@@ -109,9 +138,14 @@ void Configurator::replyConfig(int messageId, ISender& reply)
 	std::stringstream s;
 	s << "{\r\n\t\"message_id\": " << messageId << ",\r\n";
 	s << "\t\"status\": \"ok\",\r\n";
+	s << "\t\"min_blob_size\": " << tracking.minBlobSize() << ",\r\n";
+	s << "\t\"depth_threshold\": {\r\n";
+	s << "\t\t\"min\": " << tracking.depthThresholdMin() << ",\r\n";
+	s << "\t\t\"max\": " << tracking.depthThresholdMax() << "},\r\n";
 	s << "\t\"horizontal_flipped\": " << (tracking.horizontalFlipped() ? "true" : "false") << ",\r\n";
 	s << "\t\"vertical_flipped\": " << (tracking.verticalFlipped() ? "true" : "false") << ",\r\n";
-	s << "\t\"data_format\": " << ((serializer.mode() == EventSerializer::Mode::Binary) ? "binary" : "json") << "\r\n";
+	s << "\t\"data_format\": " << ((serializer.mode() == EventSerializer::Mode::Binary) ? "binary" : "json") << ",\r\n";
+	s << "\t\"running\": " << (tracking.running() ? "true" : "false") << "\r\n";
 	s << "}\r\n";
 	reply.send(s.str());
 }
