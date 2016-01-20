@@ -1,4 +1,5 @@
 #include "UdpReceiver.h"
+
 using boost::asio::ip::udp;
 
 UdpReceiver::UdpReceiver(boost::asio::io_service& io_service, int port)
@@ -18,7 +19,8 @@ void UdpReceiver::doReceive()
 		boost::asio::buffer(buffer, max_length), sender,
 		[this](boost::system::error_code ec, std::size_t bytes_recvd)
 	{
-		onReceive(std::string(buffer, buffer + bytes_recvd), Reply(m_sock, sender));
+		Reply reply(m_sock, sender);
+		onReceive(std::string(buffer, buffer + bytes_recvd), reply);
 		
 		doReceive();
 	});

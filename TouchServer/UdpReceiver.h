@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+#include "targetver.h"
 #include <boost/asio.hpp>
 #include "IReceiver.h"
 
