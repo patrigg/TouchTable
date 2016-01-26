@@ -1,5 +1,6 @@
 #include "TouchTracking.h"
 #include <iostream>
+#include <chrono>
 #include "TouchEvent.h"
 
 using namespace openni;
@@ -38,9 +39,9 @@ TouchTracking::TouchTracking()
 void TouchTracking::onTouchEvent(const std::function<void(const TouchEvent&)>& handler)
 {
 	std::lock_guard<std::mutex> lock(m);
-	tracker.onTouch = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Touch, flip(p) }); };
-	tracker.onMove = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Move, flip(p) }); };
-	tracker.onRelease = [handler, this](const TrackedPoint& p){ handler({ TouchEvent::Release, flip(p) }); };
+	tracker.onTouch = [handler, this](const TrackedPoint& p){ handler({ frameTime, TouchEvent::Touch, flip(p) }); };
+	tracker.onMove = [handler, this](const TrackedPoint& p){ handler({ frameTime, TouchEvent::Move, flip(p) }); };
+	tracker.onRelease = [handler, this](const TrackedPoint& p){ handler({ frameTime, TouchEvent::Release, flip(p) }); };
 }
 
 TrackedPoint TouchTracking::flip(TrackedPoint p)
@@ -139,8 +140,13 @@ void TouchTracking::run()
 {
 	while (isRunning)
 	{
+		auto time = std::chrono::system_clock::now();
 		std::lock_guard<std::mutex> lock(m);
 		runSingle();
+		if (m_delay > 0)
+		{
+			std::this_thread::sleep_until(time + std::chrono::milliseconds(m_delay));
+		}
 	}
 }
 
@@ -162,6 +168,8 @@ void TouchTracking::runSingle()
 {
 	stream.readFrame(&frame);
 
+	frameTime = std::chrono::system_clock::now();
+
 	copyFrameToImage(frame, image);
 
 	detector.detect(image);
@@ -175,6 +183,7 @@ void TouchTracking::runSingle()
 
 void TouchTracking::flipHorizontal(bool value)
 {
+	std::lock_guard<std::mutex> lock(m);
 	hFlipped = value;
 }
 
@@ -185,6 +194,7 @@ bool TouchTracking::horizontalFlipped() const
 
 void TouchTracking::flipVertical(bool value)
 {
+	std::lock_guard<std::mutex> lock(m);
 	vFlipped = value;
 }
 
@@ -200,21 +210,25 @@ short TouchTracking::minBlobSize() const
 
 void TouchTracking::minBlobSize(short size)
 {
+	std::lock_guard<std::mutex> lock(m);
 	centerPointExtractor.minBlobSize(size);
 }
 
 void TouchTracking::depthThresholdMin(int min)
 {
+	std::lock_guard<std::mutex> lock(m);
 	detector.thresholdMin(min);
 }
 
 void TouchTracking::depthThresholdMax(int max)
 {
+	std::lock_guard<std::mutex> lock(m);
 	detector.thresholdMax(max);
 }
 
 void TouchTracking::depthThreshold(int min, int max)
 {
+	std::lock_guard<std::mutex> lock(m);
 	detector.threshold(min, max);
 }
 
@@ -226,4 +240,15 @@ int TouchTracking::depthThresholdMin() const
 int TouchTracking::depthThresholdMax() const
 {
 	return detector.thresholdMax();
+}
+
+int TouchTracking::delay() const
+{
+	return m_delay;
+}
+
+void TouchTracking::delay(int delay)
+{
+	std::lock_guard<std::mutex> lock(m);
+	m_delay = delay;
 }

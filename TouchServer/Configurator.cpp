@@ -113,6 +113,10 @@ void Configurator::update(const std::string& name, const Json::Value& value)
 			tracking.stop();
 		}
 	}
+	else if (name == "delay")
+	{
+		tracking.delay(value.asInt());
+	}
 }
 
 void Configurator::replyOk(int messageId, ISender& reply)
@@ -146,6 +150,7 @@ void Configurator::replyConfig(int messageId, ISender& reply)
 	s << "\t\"vertical_flipped\": " << (tracking.verticalFlipped() ? "true" : "false") << ",\r\n";
 	s << "\t\"data_format\": " << ((serializer.mode() == EventSerializer::Mode::Binary) ? "binary" : "json") << ",\r\n";
 	s << "\t\"running\": " << (tracking.running() ? "true" : "false") << "\r\n";
+	s << "\t\"delay\": " << tracking.delay() << "\r\n";
 	s << "}\r\n";
 	reply.send(s.str());
 }

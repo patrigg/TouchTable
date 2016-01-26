@@ -43,6 +43,10 @@ class TouchTracking
 
 	TrackedPoint flip(TrackedPoint p);
 
+	int m_delay = 0;
+
+	std::chrono::system_clock::time_point frameTime;
+
 public:
 	void start();
 	void stop();
@@ -69,6 +73,9 @@ public:
 
 	int depthThresholdMin() const;
 	int depthThresholdMax() const;
+
+	int delay() const;
+	void delay(int milliseconds);
 
 	TouchTracking();
 	~TouchTracking();

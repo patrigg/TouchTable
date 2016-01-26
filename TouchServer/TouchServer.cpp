@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	OutputMode outputMode = OutputMode::Console;
 	bool stopped = false;
 
-	EventSerializer::Mode serializationMode = EventSerializer::Mode::Binary;
+	EventSerializer::Mode serializationMode = EventSerializer::Mode::Json;
 	for (int argIdx = 1; argIdx < argc; ++argIdx)
 	{
 		if (std::string("horizontal_flip") == argv[argIdx])
@@ -103,6 +103,11 @@ int main(int argc, char* argv[])
 		{
 			stopped = true;
 		}
+		else if (std::string("delay") == argv[argIdx])
+		{
+			++argIdx;
+			tracking.delay(std::stoi(argv[argIdx]));
+		}
 		else
 		{
 			std::cerr << "unrecognized command-line argument: " << argv[argIdx] << "\r\n";
@@ -137,7 +142,7 @@ int main(int argc, char* argv[])
 		tracking.start();
 	}
 	
-	//tracking.removeBackground();
+	tracking.removeBackground();
 
 
 
