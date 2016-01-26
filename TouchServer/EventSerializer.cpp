@@ -40,7 +40,7 @@ namespace {
 	{
 		auto micros_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 		auto micros = micros_since_epoch % 1000;
-		auto whole_seconds = std::chrono::system_clock::time_point::time_point(time.time_since_epoch() - std::chrono::microseconds(micros));
+		auto whole_seconds = std::chrono::system_clock::time_point(time.time_since_epoch() - std::chrono::microseconds(micros));
 	}
 }
 
